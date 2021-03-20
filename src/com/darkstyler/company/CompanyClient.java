@@ -218,13 +218,13 @@ public class CompanyClient {
                 case 3:{
                     printVehicleList(listVehicle,TransportType.Air);
                 }
-                case 5:{
+                case 4:{
                     printVehicleList(listVehicle,TransportType.Road);
                 }
-                case 6:{
+                case 5:{
                     printVehicleList(listVehicle,TransportType.Water);
                 }
-                case 7:{
+                case 6:{
                     printVehicleList(listVehicle,TransportType.Rail);
                 }
             }
