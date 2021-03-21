@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.text.DecimalFormat;
 
 
-public abstract class Vehicle  implements Serializable {
+public abstract class Vehicle implements Serializable {
     private int id;
     private double distanceShippment;
     private double averageSpeed;
@@ -13,7 +13,7 @@ public abstract class Vehicle  implements Serializable {
     private int weight;
     private TransportType transportType;
 
-    public Vehicle(int id,double distanceShippment, double averageSpeed, double tripCost, int weight, TransportType transportType) {
+    public Vehicle(int id, double distanceShippment, double averageSpeed, double tripCost, int weight, TransportType transportType) {
         this.id = id;
         this.distanceShippment = distanceShippment;
         this.averageSpeed = averageSpeed;
@@ -40,6 +40,7 @@ public abstract class Vehicle  implements Serializable {
     public int getWeight() {
         return weight;
     }
+
     @Override
     public String toString() {
         DecimalFormat decimalFormat = new DecimalFormat("#0.00");
