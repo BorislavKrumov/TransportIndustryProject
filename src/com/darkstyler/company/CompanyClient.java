@@ -163,11 +163,11 @@ public class CompanyClient {
         tripCost = readOnlyDoubles(sc);
         System.out.println("Enter the weight of the shipment as an integer:");
         weight = readOnlyIntegers(sc);
-        if (transportType == TransportType.Air) {
+        if (transportType == TransportType.AIR) {
             return new Airplane(generateId(listVehicle), distance, averageSpeed, tripCost, weight);
-        } else if (transportType == TransportType.Rail) {
+        } else if (transportType == TransportType.RAIL) {
             return new Train(generateId(listVehicle), distance, averageSpeed, tripCost, weight);
-        } else if (transportType == TransportType.Road) {
+        } else if (transportType == TransportType.ROAD) {
             return new Car(generateId(listVehicle), distance, averageSpeed, tripCost, weight);
         } else {
             return new Ship(generateId(listVehicle), distance, averageSpeed, tripCost, weight);
@@ -193,25 +193,25 @@ public class CompanyClient {
                         switch (controlKey) {
                             case ADD_AIRPLANE: {
                                 System.out.println("You are about to create a shippment with Airplane.");
-                                Vehicle vehicle = vehicleCreate(sc, TransportType.Air, listVehicle);
+                                Vehicle vehicle = vehicleCreate(sc, TransportType.AIR, listVehicle);
                                 listVehicle.add(vehicle);
                                 break;
                             }
                             case ADD_CAR: {
                                 System.out.println("You are about to create a shippment with Car.");
-                                Vehicle vehicle = vehicleCreate(sc, TransportType.Road, listVehicle);
+                                Vehicle vehicle = vehicleCreate(sc, TransportType.ROAD, listVehicle);
                                 listVehicle.add(vehicle);
                                 break;
                             }
                             case ADD_SHIP: {
                                 System.out.println("You are about to create a shippment with Ship.");
-                                Vehicle vehicle = vehicleCreate(sc, TransportType.Road, listVehicle);
+                                Vehicle vehicle = vehicleCreate(sc, TransportType.ROAD, listVehicle);
                                 listVehicle.add(vehicle);
                                 break;
                             }
                             case ADD_TRAIN: {
                                 System.out.println("You are about to create a shippment with Train.");
-                                Vehicle vehicle = vehicleCreate(sc, TransportType.Rail, listVehicle);
+                                Vehicle vehicle = vehicleCreate(sc, TransportType.RAIL, listVehicle);
                                 listVehicle.add(vehicle);
                                 break;
                             }
@@ -220,16 +220,16 @@ public class CompanyClient {
                     writeVehicleList(listVehicle);
                 }
                 case LIST_AIRPLANES: {
-                    printVehicleList(listVehicle, TransportType.Air);
+                    printVehicleList(listVehicle, TransportType.AIR);
                 }
                 case LIST_CARS: {
-                    printVehicleList(listVehicle, TransportType.Road);
+                    printVehicleList(listVehicle, TransportType.ROAD);
                 }
                 case LIST_SHIPS: {
-                    printVehicleList(listVehicle, TransportType.Water);
+                    printVehicleList(listVehicle, TransportType.WATER);
                 }
                 case LIST_TRAINS: {
-                    printVehicleList(listVehicle, TransportType.Rail);
+                    printVehicleList(listVehicle, TransportType.RAIL);
                 }
             }
         }

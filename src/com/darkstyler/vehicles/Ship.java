@@ -3,7 +3,7 @@ package com.darkstyler.vehicles;
 public class Ship extends Vehicle {
 
     public Ship(int id, double distanceShippment, double averageSpeed, double tripCost, int weight) {
-        super(id, distanceShippment, averageSpeed, tripCost, weight, TransportType.Water);
+        super(id, distanceShippment, averageSpeed, tripCost, weight, TransportType.WATER);
     }
 
     @Override
