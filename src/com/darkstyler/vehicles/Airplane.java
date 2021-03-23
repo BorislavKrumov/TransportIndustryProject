@@ -1,5 +1,7 @@
 package com.darkstyler.vehicles;
 
+import com.darkstyler.util.Constants;
+
 public class Airplane extends Vehicle {
 
     public Airplane(int id,double distanceShippment, double averageSpeed, double tripCost, int weight) {
@@ -8,7 +10,7 @@ public class Airplane extends Vehicle {
 
     @Override
     public double getFinalPrice() {
-        return getTripCost() + getWeight() * 3.4;
+        return getTripCost() + getWeight() * Constants.AIRPLANE_MULTIPL;
     }
 
 }
