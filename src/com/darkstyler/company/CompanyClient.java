@@ -30,12 +30,12 @@ public class CompanyClient {
 
     public static void writeVehicleList(List<Vehicle> vehicles) {
         File vehicleList = new File("vehicle.txt");
-        try {
+
+        try(ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream("vehicle.txt"))) {
             if (!vehicleList.exists()) {
                 vehicleList.createNewFile();
             } else {
-                FileOutputStream fos = new FileOutputStream("vehicle.txt");
-                ObjectOutputStream objectOutputStream = new ObjectOutputStream(fos);
+
                 for (Object obj : vehicles) {
                     objectOutputStream.writeObject(obj);
                     objectOutputStream.reset();
@@ -49,15 +49,14 @@ public class CompanyClient {
 
     public static List<Vehicle> readVehicleList() {
         List<Vehicle> vehicleArrayList = new ArrayList<>();
-        try {
-            File vehicleList = new File("vehicle.txt");
-            if (!vehicleList.exists()) {
-                vehicleList.createNewFile();
-            }
+        File vehicleList = new File("vehicle.txt");
+        if(!vehicleList.exists()){
+            writeVehicleList(vehicleArrayList);
+        }
+        try (ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream("vehicle.txt"))){
+
             try {
-                FileInputStream fis = new FileInputStream("vehicle.txt");
-                ObjectInputStream objectInputStream = new ObjectInputStream(fis);
-                while (fis.available() != -1) {
+                while (objectInputStream.available() != -1) {
                     Vehicle vehicle = (Vehicle) objectInputStream.readObject();
                     vehicleArrayList.add(vehicle);
                 }
