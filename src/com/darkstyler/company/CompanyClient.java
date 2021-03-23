@@ -2,7 +2,6 @@ package com.darkstyler.company;
 
 import com.darkstyler.vehicles.*;
 
-
 import java.io.FileInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -22,16 +21,10 @@ public class CompanyClient {
     private static final int LIST_SHIPS = 5;
     private static final int LIST_TRAINS = 6;
     private static final int EXIT = 7;
-    private static final int ADD_AIRPLANE = 1;
-    private static final int ADD_CAR = 2;
-    private static final int ADD_SHIP = 3;
-    private static final int ADD_TRAIN = 4;
-    private static final int BACK_TO_MAIN_MENU = 5;
-
+    private static final int ADDING_OPTIONS = 4;
     public static void writeVehicleList(List<Vehicle> vehicles) {
         File vehicleList = new File("vehicle.txt");
-
-        try(ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream("vehicle.txt"))) {
+        try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream("vehicle.txt"))) {
             if (!vehicleList.exists()) {
                 vehicleList.createNewFile();
             } else {
@@ -50,10 +43,10 @@ public class CompanyClient {
     public static List<Vehicle> readVehicleList() {
         List<Vehicle> vehicleArrayList = new ArrayList<>();
         File vehicleList = new File("vehicle.txt");
-        if(!vehicleList.exists()){
+        if (!vehicleList.exists()) {
             writeVehicleList(vehicleArrayList);
         }
-        try (ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream("vehicle.txt"))){
+        try (ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream("vehicle.txt"))) {
 
             try {
                 while (objectInputStream.available() != -1) {
@@ -119,13 +112,12 @@ public class CompanyClient {
         return temp;
     }
 
-    private static void printVehicleMenu() {
+    protected static void printVehicleMenu() {
         String builder = "\n" + "Choose vehicle which will deliver the package" +
                 "\n" + "Press 1: Airplane" +
                 "\n" + "Press 2: Car" +
                 "\n" + "Press 3: Ship" +
-                "\n" + "Press 4: Train" +
-                "\n" + "Press 5: Back to Main menu";
+                "\n" + "Press 4: Train" ;
         System.out.println(builder);
     }
 
@@ -162,15 +154,7 @@ public class CompanyClient {
         tripCost = readOnlyDoubles(sc);
         System.out.println("Enter the weight of the shipment as an integer:");
         weight = readOnlyIntegers(sc);
-        if (transportType == TransportType.AIR) {
-            return new Airplane(generateId(listVehicle), distance, averageSpeed, tripCost, weight);
-        } else if (transportType == TransportType.RAIL) {
-            return new Train(generateId(listVehicle), distance, averageSpeed, tripCost, weight);
-        } else if (transportType == TransportType.ROAD) {
-            return new Car(generateId(listVehicle), distance, averageSpeed, tripCost, weight);
-        } else {
-            return new Ship(generateId(listVehicle), distance, averageSpeed, tripCost, weight);
-        }
+        return transportType.createVehicle(generateId(listVehicle), distance, averageSpeed, tripCost, weight);
     }
 
     public void initialize() {
@@ -186,37 +170,13 @@ public class CompanyClient {
                     break;
                 }
                 case ADD_VEHICLE: {
-                    while (controlKey != BACK_TO_MAIN_MENU) {
                         printVehicleMenu();
                         controlKey = readOnlyIntegers(sc);
-                        switch (controlKey) {
-                            case ADD_AIRPLANE: {
-                                System.out.println("You are about to create a shippment with Airplane.");
-                                Vehicle vehicle = vehicleCreate(sc, TransportType.AIR, listVehicle);
-                                listVehicle.add(vehicle);
-                                break;
-                            }
-                            case ADD_CAR: {
-                                System.out.println("You are about to create a shippment with Car.");
-                                Vehicle vehicle = vehicleCreate(sc, TransportType.ROAD, listVehicle);
-                                listVehicle.add(vehicle);
-                                break;
-                            }
-                            case ADD_SHIP: {
-                                System.out.println("You are about to create a shippment with Ship.");
-                                Vehicle vehicle = vehicleCreate(sc, TransportType.ROAD, listVehicle);
-                                listVehicle.add(vehicle);
-                                break;
-                            }
-                            case ADD_TRAIN: {
-                                System.out.println("You are about to create a shippment with Train.");
-                                Vehicle vehicle = vehicleCreate(sc, TransportType.RAIL, listVehicle);
-                                listVehicle.add(vehicle);
-                                break;
-                            }
+                        if(controlKey <= ADDING_OPTIONS){
+                            AddVehicle addVehicleMenu = AddVehicle.value(controlKey);
+                            listVehicle.add(addVehicleMenu.addVehicleOption(sc, listVehicle));
+                            writeVehicleList(listVehicle);
                         }
-                    }
-                    writeVehicleList(listVehicle);
                 }
                 case LIST_AIRPLANES: {
                     printVehicleList(listVehicle, TransportType.AIR);
@@ -232,6 +192,53 @@ public class CompanyClient {
                 }
             }
         }
+    }
+    enum AddVehicle {
+        ADD_AIRPLANE(1) {
+            @Override
+            public Vehicle addVehicleOption(Scanner sc, List<Vehicle> vehicles) {
+                System.out.println("You are about to create a shippment with Airplane.");
+                return vehicleCreate(sc, TransportType.AIR, vehicles);
+            }
+        },
+        ADD_CAR(2) {
+            @Override
+            public Vehicle addVehicleOption(Scanner sc, List<Vehicle> vehicles) {
+                System.out.println("You are about to create a shippment with Car.");
+                return vehicleCreate(sc, TransportType.ROAD, vehicles);
+            }
+        },
+        ADD_SHIP(3) {
+            @Override
+            public Vehicle addVehicleOption(Scanner sc, List<Vehicle> vehicles) {
+                System.out.println("You are about to create a shippment with Ship.");
+                return vehicleCreate(sc, TransportType.WATER, vehicles);
+            }
+        },
+        ADD_TRAIN(4) {
+            @Override
+            public Vehicle addVehicleOption(Scanner sc, List<Vehicle> vehicles) {
+                System.out.println("You are about to create a shippment with Train.");
+                return vehicleCreate(sc,TransportType.RAIL,vehicles);
+            }
+        };
+        int choice;
+        AddVehicle(int choice) {
+            this.choice = choice;
+        }
 
+        static AddVehicle value(int choice) {
+            for (AddVehicle menu : AddVehicle.values()) {
+                if (menu.getChoice() == choice) {
+                    return menu;
+                }
+            }
+            return null;
+        }
+
+        public int getChoice() {
+            return choice;
+        }
+        public abstract Vehicle addVehicleOption(Scanner sc, List<Vehicle> vehicles);
     }
 }
