@@ -193,7 +193,7 @@ public class CompanyClient {
             }
         }
     }
-    enum AddVehicle {
+   private enum AddVehicle {
         ADD_AIRPLANE(1) {
             @Override
             public Vehicle addVehicleOption(Scanner sc, List<Vehicle> vehicles) {
@@ -236,9 +236,9 @@ public class CompanyClient {
             return null;
         }
 
-        public int getChoice() {
+        private int getChoice() {
             return choice;
         }
-        public abstract Vehicle addVehicleOption(Scanner sc, List<Vehicle> vehicles);
+        protected abstract Vehicle addVehicleOption(Scanner sc, List<Vehicle> vehicles);
     }
 }
