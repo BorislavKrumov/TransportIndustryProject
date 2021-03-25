@@ -12,13 +12,17 @@ import java.util.Set;
 
 public class AirportParking implements Parking{
 
-    private Set<Vehicle> parkedVehicles;
+    private Map<TransportType,Set<Vehicle>> parkedVehicles;
     private Map<TransportType,Integer> emptyCells;
 
 
     public AirportParking(int planes, int cars, int ships, int trains){
         int capacity = planes + cars + ships + trains;
-        this.parkedVehicles = new HashSet<>(capacity);
+        this.parkedVehicles = new HashMap<>(capacity);
+        parkedVehicles.put(TransportType.AIR,new HashSet<>());
+        parkedVehicles.put(TransportType.ROAD,new HashSet<>());
+        parkedVehicles.put(TransportType.WATER,new HashSet<>());
+        parkedVehicles.put(TransportType.RAIL,new HashSet<>());
         this.emptyCells = new HashMap<>();
         emptyCells.put(TransportType.AIR,planes);
         emptyCells.put(TransportType.ROAD,cars);
@@ -34,14 +38,14 @@ public class AirportParking implements Parking{
         }
         else{
             emptyCells.put(vehicle.getTransportType(),cellsLeft -1);
-            parkedVehicles.add(vehicle);
+            parkedVehicles.get(vehicle.getTransportType()).add(vehicle);
             System.out.println(MessageFormat.format("Vehicle with id:{0} was parked.", vehicle.getId()));
         }
     }
     @Override
     public void receipt(Vehicle vehicle, double minutes){
             emptyCells.put(vehicle.getTransportType(),emptyCells.get(vehicle.getTransportType())+1);
-            boolean isRemoved =parkedVehicles.remove(vehicle);
+            boolean isRemoved =parkedVehicles.get(vehicle.getTransportType()).remove(vehicle);
             if(isRemoved == true){
                 double price = minutes * Constants.AIRPLANE_MULTIPL;
                 System.out.println(MessageFormat.format("Vehicle with id:{0} owes:{1}$ to the Airport parking.", vehicle.getId(), price));
