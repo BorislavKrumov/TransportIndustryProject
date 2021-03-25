@@ -1,4 +1,4 @@
-package com.darkstyler.vehicles;
+package com.darkstyler.model.vehicles;
 
 public enum TransportType {
     RAIL{

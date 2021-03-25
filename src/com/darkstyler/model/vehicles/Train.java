@@ -1,6 +1,8 @@
-package com.darkstyler.vehicles;
+package com.darkstyler.model.vehicles;
 
 import com.darkstyler.util.Constants;
+
+import java.util.Objects;
 
 public class Train extends Vehicle {
 
@@ -12,4 +14,5 @@ public class Train extends Vehicle {
     public double getFinalPrice() {
         return getTripCost() + getWeight() * Constants.TRAIN_MULTIPL;
     }
+
 }

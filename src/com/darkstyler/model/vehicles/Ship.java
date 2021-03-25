@@ -1,6 +1,8 @@
-package com.darkstyler.vehicles;
+package com.darkstyler.model.vehicles;
 
 import com.darkstyler.util.Constants;
+
+import java.util.Objects;
 
 public class Ship extends Vehicle {
 

@@ -1,6 +1,8 @@
-package com.darkstyler.vehicles;
+package com.darkstyler.model.vehicles;
 
 import com.darkstyler.util.Constants;
+
+import java.util.Objects;
 
 public class Car extends Vehicle {
 
@@ -12,5 +14,4 @@ public class Car extends Vehicle {
     public double getFinalPrice() {
         return getTripCost() + getWeight() * Constants.CAR_MULTIPL;
     }
-
 }
