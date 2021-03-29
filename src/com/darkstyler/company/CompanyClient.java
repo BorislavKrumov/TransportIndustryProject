@@ -2,6 +2,7 @@ package com.darkstyler.company;
 
 import com.darkstyler.model.parking.AirportParking;
 import com.darkstyler.model.vehicles.*;
+import com.darkstyler.util.DbConnector;
 
 import java.io.FileInputStream;
 import java.io.File;
@@ -10,6 +11,10 @@ import java.io.ObjectOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.EOFException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.*;
 
 public class CompanyClient {
@@ -23,7 +28,64 @@ public class CompanyClient {
     private static final int VEHICLE_OPTIONS = 4;
     private static final int SORTING_OPTIONS = 5;
     AirportParking airportParking = new AirportParking(4,15,3,2);
+    static Connection connection = DbConnector.getInstance().getConnection();
 
+
+    //Database operations
+    public static void insertFromFileToDb(List<Vehicle> vehicleList){
+        try {
+            String query = "INSERT INTO VEHICLE (id,distance,speed,trip_cost,weight,transport_type) values(?,?,?,?,?,?)";
+            PreparedStatement statement = connection.prepareStatement(query);
+            for(Vehicle vehicle : vehicleList){
+                statement.setInt(1,vehicle.getId()+1);
+                statement.setDouble(2,vehicle.getDistanceShippment());
+                statement.setDouble(3,vehicle.getAverageSpeed());
+                statement.setDouble(4,vehicle.getTripCost());
+                statement.setInt(5,vehicle.getWeight());
+                statement.setString(6,vehicle.getTransportType().toString());
+                statement.addBatch();
+            }
+            statement.executeBatch();
+        } catch (SQLException throwables) {
+            System.out.println("There are elements in the file and in the database that are duplicated or the file is empty.");
+        }
+
+    }
+
+    public static void addVehicleToDb(Vehicle vehicle) {
+        try {
+            String query = "INSERT INTO VEHICLE (id,distance,speed,trip_cost,weight,transport_type) values(?,?,?,?,?,?)";
+            PreparedStatement statement = connection.prepareStatement(query);
+            statement.setInt(1, vehicle.getId() + 1);
+            statement.setDouble(2, vehicle.getDistanceShippment());
+            statement.setDouble(3, vehicle.getAverageSpeed());
+            statement.setDouble(4, vehicle.getTripCost());
+            statement.setInt(5, vehicle.getWeight());
+            statement.setString(6, vehicle.getTransportType().toString());
+            statement.addBatch();
+            statement.executeBatch();
+        } catch (SQLException throwables) {
+            System.out.println("You can't add vehicle to database right now. Reload the program and try again.");
+        }
+    }
+    public static List<Vehicle> readVehiclesFromDB(){
+        List<Vehicle> vehicleList = new ArrayList<>();
+        try{
+            String query = "Select * from vehicle";
+            PreparedStatement statement = connection.prepareStatement(query);
+            ResultSet rs = statement.executeQuery();
+            while(rs.next()){
+               TransportType transportType = TransportType.valueOf(rs.getString("transport_type"));
+               Vehicle vehicle = transportType.createVehicle(rs.getInt("id")-1,rs.getDouble("distance"),rs.getDouble("speed"),rs.getDouble("trip_cost"),rs.getInt("weight"));
+               vehicleList.add(vehicle);
+            }
+            rs.close();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+        return vehicleList;
+    }
+    //List operations
     public static void writeVehicleList(List<Vehicle> vehicles) {
         try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream("vehicle.txt"))) {
                 for (Object obj : vehicles) {
@@ -34,8 +96,7 @@ public class CompanyClient {
             e.printStackTrace();
         }
     }
-
-    public static List<Vehicle> readVehicleList() {
+        public static List<Vehicle> readVehicleList() {
         List<Vehicle> vehicleArrayList = new ArrayList<>();
         File vehicleList = new File("vehicle.txt");
         if (!vehicleList.exists()) {
@@ -56,6 +117,7 @@ public class CompanyClient {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        insertFromFileToDb(vehicleArrayList);
         return vehicleArrayList;
     }
 
@@ -80,7 +142,7 @@ public class CompanyClient {
             System.out.println("There are no vehicles with shipments.");
         }
     }
-
+    //methods for accepting only one parameter
     private static int readOnlyIntegers(Scanner sc) {
         System.out.println("\nEnter a number.");
         int temp;
@@ -106,7 +168,7 @@ public class CompanyClient {
         }
         return temp;
     }
-
+    //Printing methods
     protected static void printVehicleMenu() {
         String builder = "\n" + "Choose vehicle which will deliver the package" +
                 "\n" + "Press 1: Airplane" +
@@ -165,11 +227,13 @@ public class CompanyClient {
         tripCost = readOnlyDoubles(sc);
         System.out.println("Enter the weight of the shipment as an integer:");
         weight = readOnlyIntegers(sc);
+        //Adding vehicle to DB
+        addVehicleToDb(transportType.createVehicle(generateId(listVehicle), distance, averageSpeed, tripCost, weight));
         return transportType.createVehicle(generateId(listVehicle), distance, averageSpeed, tripCost, weight);
     }
 
     public void initialize() {
-        List<Vehicle> listVehicle = readVehicleList();
+        List<Vehicle> listVehicle = readVehiclesFromDB();
         int controlKey = 0;
         while (controlKey != EXIT) {
             printHomeMenu();
